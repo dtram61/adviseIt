@@ -1,52 +1,64 @@
-<!DOCTYPE html>
-<html>
-<body>
 <?php
 
-if(isset($_POST['submit']))
-{
-    $fallQuarter = $_POST['fallQuarter'];
-    $notesForFall = $_POST['notesForFall'];
-    echo "Fall Quarter: " .$fallQuarter . "<br />";
-    echo "Fall Quarter Notes: " .$notesForFall . "<br /> <br />";
+$host = "localhost";
+$username = "dtramgre_grcuser";
+$password = "Qazwsxedc123cpanel";
+$dbname = "dtramgre_grc";
 
-    $winterQuarter = $_POST['winterQuarter'];
-    $notesForWinter = $_POST['notesForWinter'];
-    echo "Winter Quarter: " .$winterQuarter . "<br />";
-    echo "Winter Quarter Notes: " .$notesForWinter . "<br /> <br />";
+$conn = mysqli_connect($host, $username, $password, $dbname);
 
-    $springQuarter = $_POST['springQuarter'];
-    $notesForSpring = $_POST['notesForSpring'];
-    echo "Spring Quarter: " .$springQuarter . "<br />";
-    echo "Spring Quarter Notes: " .$notesForSpring . "<br /> <br />";
-
-    $summerQuarter = $_POST['summerQuarter'];
-    $notesForSummer = $_POST['notesForSummer'];
-    echo "Summer Quarter: " .$summerQuarter . "<br />";
-    echo "Summer Quarter Notes: " .$notesForSummer . "<br /> <br />";
+if (!$conn) {
+    die("Connection Failed: " .mysqli_connect_error());
 }
 
-?>
+$classes = $_POST['classes'];
+$notes = $_POST['notes'];
 
-<a href="index.php">
+function randomToken($length)
+{
+
+    $stringSpace = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $pieces = [];
+    $max = mb_strlen($stringSpace, '8bit') - 1;
+    for ($i = 0; $i < $length; ++ $i) {
+        $pieces[] = $stringSpace[random_int(0, $max)];
+    }
+    return implode('', $pieces);
+}
+$token = randomToken(6);
+
+$sql = "INSERT INTO advise_it (classes, notes, token)
+VALUES ('$classes', '$notes', '$token')";
+
+if (mysqli_query($conn,$sql))
+{
+    echo "Form Submitted Successfully. Token: <strong>". $token . "</strong>";
+} else {
+    echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+}
+
+mysqli_close($conn);
+
+
+
+?>
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap demo</title>
+</head>
+<body>
+<h1>Hello, world!</h1>
+<a href="index.html">
     <button>
         Home
     </button>
 
 </a>
-
-<button type="button" onclick="savePlan()">Save Plan</button>
-
-<p>Academic Plan was last updated and saved: </p>
-
-<ol id="savePlan"></ol>
-<script>
-    function savePlan() {
-       let savePlan = document.getElementById("savePlan")
-        let date = new Date();
-
-       savePlan.innerHTML += `<l1>${date}</li>`
-    }
-</script>
 </body>
 </html>
+
+
+
